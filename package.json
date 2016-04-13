@@ -10,11 +10,13 @@
   },
   "browserify": {
     "transform": [
-      "brfs"
+      "brfs",
+      "glslify"
     ]
   },
   "dependencies": {
     "brfs": "^1.2.0",
+    "glslify": "^2.0.0",
     "browserify": "^7.0.0",
     "bunny": "^1.0.1",
     "canvas-fit": "^1.2.0",
@@ -24,6 +26,7 @@
     "gl-geometry": "^1.0.2",
     "gl-matrix": "^2.1.0",
     "gl-shader-core": "^2.2.0",
+    "gl-shader": "^4.2.0",
     "st": "^0.5.2",
     "unindex-mesh": "^1.0.1",
     "watchify": "^2.1.1"
