@@ -4,11 +4,11 @@ uniform sampler2D buffer, vid;
 uniform vec2 dims;
 uniform float width;
 uniform float amp;
+uniform float scaleCoef;
 
 varying vec2 uv;
 
-vec3 rgb2hsv(vec3 c)
-{
+vec3 rgb2hsv(vec3 c) {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
     vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
@@ -22,8 +22,8 @@ void main() {
 
     float s = rgb2hsv(texture2D(buffer, uv.st).rgb).s;
 
-    mat2 sca = mat2(1.+(0.01*s), 0., 0., 1.+(0.01*s));
-    vec2 offs = vec2(1./dims.x, 1./dims.y);
+    mat2 sca = mat2(1. + (scaleCoef * s), 0., 0., 1. + (scaleCoef * s));
+    vec2 offs = vec2(1. / dims.x, 1. / dims.y);
 
     vec2 src = uv.st * sca;
 
@@ -48,8 +48,6 @@ void main() {
     vec4 col7 = texture2D(buffer, tc7);
     vec4 col8 = texture2D(buffer, tc8);
 
-    gl_FragColor = (2.0 * col0 + 1.0 * col1 + 2.0 * col2 +  
-                1.0 * col3 + 4.0 * col4 + 1.0 * col5 +
-                2.0 * col6 + 1.0 * col7 + 2.0 * col8) / amp; 
+    gl_FragColor = (2.0 * col0 + 1.0 * col1 + 2.0 * col2 + 1.0 * col3 + 4.0 * col4 + 1.0 * col5 + 2.0 * col6 + 1.0 * col7 + 2.0 * col8) / amp;
 
 }
