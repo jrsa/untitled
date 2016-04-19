@@ -30,10 +30,9 @@ params = {
   blurWidth: 1.0,
   blurAmp: 16.0,
   sharpWidth: 1.0,
-  sharpAmp: 10.,
-  scaleCoef: 0.02,
+  sharpAmp: 9.5,
+  scaleCoef: -0.001,
   audioFuck: [null, null],
-  reset: 20
 }
 global.params = params
 
@@ -53,27 +52,6 @@ shell.on("gl-init", function() {
   audioFuck = audioCtx.createBuffer(1, 10, audioCtx.sampleRate);
   effect4 = audioCtx["createConvolver"]();
   source.connect(effect4);
-
-  // this is bunk
-  // effect = audioCtx["createBiquadFilter"]();
-  // effect.type = 'allpass';
-  // effect.frequency.value = 1250;
-  // effect.Q.value = 9000;
-
-  // effect2 = audioCtx["createBiquadFilter"]();
-  // effect2.type = 'allpass';
-  // effect2.frequency.value = 2500;
-  // effect2.Q.value = 9000;
-  // effect.connect(effect2);
-  // effect3 = audioCtx["createBiquadFilter"]();
-  // effect3.type = 'allpass';
-  // effect3.frequency.value = 5000;
-  // effect3.Q.value = 9000;
-  // effect2.connect(effect3);
-  // effect4.type = 'allpass';
-  // effect4.frequency.value = 10000;
-  // effect4.Q.value = 9000;
-  // effect3.connect(effect4);
 
   effect4.buffer = audioFuck;
 
@@ -109,7 +87,7 @@ shell.on("gl-init", function() {
   vid.loop = true
   //vid.play()
   global.vid = vid
-
+  global.effect = effect4
   global.gl = shell.gl
   global.shell = shell
 })
