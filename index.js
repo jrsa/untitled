@@ -5,10 +5,10 @@ var glslify = require("glslify")
 var ndarray = require("ndarray")
 var fill = require("ndarray-fill")
 var fillScreen = require("a-big-triangle")// bb
+var createTexture = require("gl-texture2d") 
  
- 
-var state, updateShader, drawShader, current = 0
- 
+var state, updateShader, drawShader, current = 0, v_tex, vid
+  
 shell.on("gl-init", function() {
   var gl = shell.gl
  
@@ -16,22 +16,17 @@ shell.on("gl-init", function() {
  
   var passthru_vs = glslify("./passthru.vs.glsl")
 
-  updateShader = glShader(gl, passthru_vs, glslify("./update.fs.glsl"))
+  updateShader = glShader(gl, passthru_vs, glslify("./2.fs.glsl"))
   drawShader = glShader(gl, passthru_vs, glslify("./draw.fs.glsl"))
  
-  var size = 512;
 
-  state = [ createFBO(gl, [size, size]), createFBO(gl, [size, size]) ]
+  state = [ createFBO(gl, [864, 482]), createFBO(gl, [864, 482]) ]
  
-  var initial_conditions = ndarray(new Uint8Array(size*size*4), [size, size, 4])
-  fill(initial_conditions, function(x,y,c) {
-    if(c === 3) {
-      return 255
-    }
-    return Math.random() > 0.9 ? 255 : 0
-  })
-  state[0].color[0].setPixels(initial_conditions)
- 
+  v_tex = createTexture(gl, [864, 482])
+
+  vid = document.getElementById("poopy")
+  vid.play()
+
   drawShader.attributes.position.location = updateShader.attributes.position.location = 0
 })
  
@@ -41,6 +36,10 @@ shell.on("tick", function() {
   var curState = state[current ^= 1]
  
   curState.bind()
+
+  _gl = v_tex.gl
+  _gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, _gl.RGBA, gl.UNSIGNED_BYTE, vid)
+  state[0].color[0] = v_tex
  
   updateShader.bind()
   updateShader.uniforms.buffer = prevState.color[0].bind()
@@ -57,5 +56,3 @@ shell.on("gl-render", function(t) {
   drawShader.uniforms.buffer = state[current].color[0].bind()
   fillScreen(gl)
 })
-
-module.exports = { updateShader }
