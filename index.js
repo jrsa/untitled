@@ -21,10 +21,23 @@ var blurFbo,
     vid,
 
     effect4,
-    fuckMe,
+    fuckMe =4,
 
     params
 
+function makeDistortionCurve(amount) {
+  var k = typeof amount === 'number' ? amount : 50,
+    n_samples = 44100,
+    curve = new Float32Array(n_samples),
+    deg = Math.PI / 180,
+    i = 0,
+    x;
+  for ( ; i < n_samples; ++i ) {
+    x = i * 2 / n_samples - 1;
+    curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+  }
+  return curve;
+};
 
 params = {
   blurWidth: 1.0,
@@ -33,6 +46,7 @@ params = {
   sharpAmp: 9.5,
   scaleCoef: -0.001,
   audioFuck: [null, null],
+  reset: 20,
 }
 global.params = params
 
@@ -49,12 +63,13 @@ shell.on("gl-init", function() {
   var myAudio = document.querySelector('audio');
   var source = audioCtx.createMediaElementSource(myAudio);
 
-  audioFuck = audioCtx.createBuffer(1, 10, audioCtx.sampleRate);
-  effect4 = audioCtx["createConvolver"]();
+  effect4 = audioCtx.createWaveShaper();
   source.connect(effect4);
 
-  effect4.buffer = audioFuck;
 
+
+  effect4.curve = makeDistortionCurve(4240000);
+  effect4.oversample = '4x';
   effect4.connect(audioCtx.destination);
 
   var gl = shell.gl
@@ -104,7 +119,7 @@ shell.on("gl-render", function(t) {
   blurProg.uniforms.amp = params.blurAmp
   blurProg.uniforms.scaleCoef = params.scaleCoef
   fillScreen(gl)
-  makeAFuck(audioFuck, fuckMe++);
+  //makeAFuck(audioFuck, fuckMe++);
 
   if (vid.readyState === vid.HAVE_ENOUGH_DATA || 1) {
     v_tex.bind()
@@ -118,7 +133,8 @@ shell.on("gl-render", function(t) {
     keyProg.bind()
     keyProg.uniforms.buffer = v_tex
     fillScreen(gl)
-    fuckMe = 0
+    effect.curve = makeDistortionCurve(fuckMe++);
+
   }
 
   sharpFbo.bind()
