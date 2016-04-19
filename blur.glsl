@@ -3,6 +3,7 @@ precision mediump float;
 uniform sampler2D buffer;
 uniform vec2 dims;
 uniform float width;
+uniform float amp;
 
 varying vec2 uv;
 
@@ -33,9 +34,8 @@ void main() {
     vec4 col7 = texture2D(buffer, tc7);
     vec4 col8 = texture2D(buffer, tc8);
 
-    //gl_FragColor = (2.0 * col0 + 1.0 * col1 + 2.0 * col2 +  
-    //            1.0 * col3 + 4.0 * col4 + 1.0 * col5 +
-    //            2.0 * col6 + 1.0 * col7 + 2.0 * col8) / 16.0; 
+    gl_FragColor = (2.0 * col0 + 1.0 * col1 + 2.0 * col2 +  
+                1.0 * col3 + 4.0 * col4 + 1.0 * col5 +
+                2.0 * col6 + 1.0 * col7 + 2.0 * col8) / amp; 
 
-    gl_FragColor = 8.0 * col4 - (col0 + col1 + col2 + col3 + col5 + col6 + col7 + col8);
 }
