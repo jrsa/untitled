@@ -20,6 +20,17 @@ var blurFbo,
    vid
 
 shell.on("gl-init", function() {
+
+  var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var myAudio = document.querySelector('audio');
+  var source = audioCtx.createMediaElementSource(myAudio);
+
+  // Create a gain node
+  var gainNode = audioCtx.createGain();
+  var distortion = audioCtx.createWaveShaper();
+  source.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
   var gl = shell.gl
 
   gl.disable(gl.DEPTH_TEST)
