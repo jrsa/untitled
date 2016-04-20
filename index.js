@@ -115,7 +115,7 @@ shell.on("gl-render", function(t) {
   blurProg.bind()
   blurProg.uniforms.buffer = sharpFbo.color[0].bind()
   blurProg.uniforms.dims = sharpFbo.shape
-  blurProg.uniforms.width = params.blurWidth
+  blurProg.uniforms.width = params.blurWidth*(shell.mouseX%4)
   blurProg.uniforms.amp = params.blurAmp
   blurProg.uniforms.scaleCoef = params.scaleCoef
   fillScreen(gl)
@@ -133,7 +133,7 @@ shell.on("gl-render", function(t) {
     keyProg.bind()
     keyProg.uniforms.buffer = v_tex
     fillScreen(gl)
-    effect.curve = makeDistortionCurve(fuckMe++);
+    effect.curve = makeDistortionCurve(shell.mouseX*4);
 
   }
 
