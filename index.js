@@ -7,23 +7,7 @@ var fill = require("ndarray-fill")
 var fillScreen = require("a-big-triangle") // bb
 var createTexture = require("gl-texture2d")
 
-var blurFbo,
-    blurProg,
-
-    sharpFbo,
-    sharpProg,
-
-    keyFbo,
-    keyProg,
-
-    passThruProg,
-    v_tex,
-    vid,
-
-    effect4,
-    fuckMe =4,
-
-    params
+var blurFbo, blurProg, sharpFbo, sharpProg, keyFbo, keyProg, passThruProg, v_tex, vid, effect4, params
 
 function makeDistortionCurve(amount) {
   var k = typeof amount === 'number' ? amount : 50,
@@ -45,17 +29,9 @@ params = {
   sharpWidth: 1.0,
   sharpAmp: 9.5,
   scaleCoef: -0.001,
-  audioFuck: [null, null],
   reset: 20,
 }
 global.params = params
-
-var makeAFuck = function(x, n) {
-  var chan = x.getChannelData(0);
-  for (var i = n - 1; i >= 0; i--) {
-    chan[i] = Math
-  }
-}
 
 shell.on("gl-init", function() {
 
@@ -64,22 +40,17 @@ shell.on("gl-init", function() {
   var source = audioCtx.createMediaElementSource(myAudio);
 
   effect4 = audioCtx.createWaveShaper();
-  source.connect(effect4);
-
-
-
   effect4.curve = makeDistortionCurve(4240000);
   effect4.oversample = '4x';
+
+  source.connect(effect4);
   effect4.connect(audioCtx.destination);
 
   var gl = shell.gl
 
+  // enable openGL's blending for alpha to work
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.enable(gl.BLEND);
-
-  shell.clearFlags = 0
-
-  gl.disable(gl.DEPTH_TEST)
 
   var passthru_vs = glslify("./passthru.vs.glsl")
   passThruProg = glShader(gl, passthru_vs, glslify("./draw.fs.glsl"))
@@ -119,7 +90,6 @@ shell.on("gl-render", function(t) {
   blurProg.uniforms.amp = params.blurAmp
   blurProg.uniforms.scaleCoef = params.scaleCoef
   fillScreen(gl)
-  //makeAFuck(audioFuck, fuckMe++);
 
   if (vid.readyState === vid.HAVE_ENOUGH_DATA || 1) {
     v_tex.bind()
@@ -134,7 +104,6 @@ shell.on("gl-render", function(t) {
     keyProg.uniforms.buffer = v_tex
     fillScreen(gl)
     effect.curve = makeDistortionCurve(shell.mouseX*4);
-
   }
 
   sharpFbo.bind()
@@ -158,7 +127,6 @@ shell.on("gl-render", function(t) {
   passThruProg.bind()
   passThruProg.uniforms.buffer = blurFbo.color[0].bind()
   fillScreen(gl)
-  passThruProg.bind()
 
   passThruProg.uniforms.buffer = keyFbo.color[0].bind()
   fillScreen(gl)
