@@ -7,21 +7,12 @@ var fill = require("ndarray-fill")
 var fillScreen = require("a-big-triangle") // bb
 var createTexture = require("gl-texture2d")
 
-var blurFbo, blurProg, sharpFbo, sharpProg, keyFbo, keyProg, passThruProg, v_tex, vid, effect4, params
+var blurFbo, blurProg, 
+    sharpFbo, sharpProg,
+    keyFbo, keyProg, 
+    passThruProg, 
 
-function makeDistortionCurve(amount) {
-  var k = typeof amount === 'number' ? amount : 50,
-    n_samples = 44100,
-    curve = new Float32Array(n_samples),
-    deg = Math.PI / 180,
-    i = 0,
-    x;
-  for ( ; i < n_samples; ++i ) {
-    x = i * 2 / n_samples - 1;
-    curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
-  }
-  return curve;
-};
+    v_tex, vid, effect4, params
 
 params = {
   blurWidth: 0.6,
@@ -34,18 +25,6 @@ params = {
 global.params = params
 
 shell.on("gl-init", function() {
-
-  var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var myAudio = document.querySelector('audio');
-  var source = audioCtx.createMediaElementSource(myAudio);
-
-  effect4 = audioCtx.createWaveShaper();
-  effect4.curve = makeDistortionCurve(4240000);
-  effect4.oversample = '4x';
-
-  source.connect(effect4);
-  effect4.connect(audioCtx.destination);
-
   var gl = shell.gl
 
   // enable openGL's blending for alpha to work
@@ -73,7 +52,7 @@ shell.on("gl-init", function() {
   vid.loop = true
   //vid.play()
   global.vid = vid
-  global.effect = effect4
+  // global.effect = effect4
   global.gl = shell.gl
   global.shell = shell
 })
@@ -103,7 +82,7 @@ shell.on("gl-render", function(t) {
     keyProg.bind()
     keyProg.uniforms.buffer = v_tex
     fillScreen(gl)
-    effect.curve = makeDistortionCurve(shell.mouseX*4);
+    // effect.curve = makeDistortionCurve(shell.mouseX * 4);
   }
 
   sharpFbo.bind()
