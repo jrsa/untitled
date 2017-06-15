@@ -24,7 +24,7 @@ function makeDistortionCurve(amount) {
 };
 
 params = {
-  blurWidth: 1.0,
+  blurWidth: 0.6,
   blurAmp: 16.0,
   sharpWidth: 1.0,
   sharpAmp: 9.5,
@@ -86,7 +86,7 @@ shell.on("gl-render", function(t) {
   blurProg.bind()
   blurProg.uniforms.buffer = sharpFbo.color[0].bind()
   blurProg.uniforms.dims = sharpFbo.shape
-  blurProg.uniforms.width = params.blurWidth*(shell.mouseX%4)
+  blurProg.uniforms.width = params.blurWidth //* (shell.mouseX%4)
   blurProg.uniforms.amp = params.blurAmp
   blurProg.uniforms.scaleCoef = params.scaleCoef
   fillScreen(gl)
