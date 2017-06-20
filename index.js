@@ -82,6 +82,7 @@ shell.on("gl-render", function(t) {
   sharpProg.uniforms.width = params.sharpWidth
   sharpProg.uniforms.amp = params.sharpAmp
   sharpProg.uniforms.mouse = [(shell.mouseX / shell.width) * 0.25, (shell.mouseY / shell.height) * 0.25]
+  sharpProg.uniforms.t = t
   fillScreen(gl)
 
   // draw blur fbo contents to screen
